@@ -1,41 +1,67 @@
-variable "environment" {
-  description = "Variable that defines the name of the environment."
-  type        = string
-  default     = "dev"
-}
-variable "default_tags" {
-  description = "A mapping of tags to assign to the resource."
-  type        = map(any)
-  default = {
-    "ManagedByTerraform" = "True"
-  }
-}
-variable "region" {
-  description = "Region in which resources are deployed."
-  type        = string
-  default     = "weu"
-}
-variable "resource_group_location" {
-  description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
-  default     = "West Europe"
+variable "name" {
+  description = "The name of the virtual network. Changing this forces a new resource to be created."
   type        = string
 }
+
 variable "resource_group_name" {
   description = "The name of the resource group in which to create the virtual network."
   type        = string
 }
-variable "vnet_name" {
-  description = "The name of the virtual network. Changing this forces a new resource to be created."
+
+variable "location" {
+  description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
   type        = string
-  default     = "VirtualNetwork1"
 }
-variable "vnet_address_space" {
-  description = "The address space that is used the virtual network. You can supply more than one address space."
+
+variable "address_space" {
+  description = "The address space that is used by the virtual network. You can supply more than one address space."
+  type        = list(string)
+  default     = ["10.0.0.0/16"]
+}
+
+variable "dns_servers" {
+  description = "List of custom DNS servers to use inside your virtual network. Unset will use default Azure-provided resolver."
+  type        = list(string)
+  default     = null
+}
+
+variable "bgp_community" {
+  description = "The BGP community attribute in format <as-number>:<community-value>."
   type        = string
-  default     = "10.0.0.0/16"
+  default     = null
 }
+
+variable "edge_zone" {
+  description = "Specifies the Edge Zone within the Azure Region where this Virtual Network should exist."
+  type        = string
+  default     = null
+}
+
+variable "flow_timeout_in_minutes" {
+  description = "The flow timeout in minutes for the Virtual Network, which is used to enable connection tracking for intra-VM flows. Possible values are between 4 and 30 minutes."
+  type        = number
+  default     = null
+}
+
+variable "encryption" {
+  description = "Optional encryption block. enforcement must be 'AllowUnencrypted' or 'DropUnencrypted'."
+  type = object({
+    enforcement = string
+  })
+  default = null
+}
+
+variable "ddos_protection_plan" {
+  description = "Optional DDoS protection plan block."
+  type = object({
+    id     = string
+    enable = bool
+  })
+  default = null
+}
+
 variable "subnet_prefix" {
-  description = "List of subnets with their prefixes and optional service endpoints and delegations"
+  description = "Map of subnets with their prefixes and optional service endpoints and delegations."
   type = map(object({
     name              = string
     ip                = list(string)
@@ -47,53 +73,14 @@ variable "subnet_prefix" {
       service_name = string
       actions      = list(string)
     })), [])
-    private_endpoint_network_policies = optional(string, null)
+    private_endpoint_network_policies             = optional(string, null)
     private_link_service_network_policies_enabled = optional(string, null)
   }))
-  default = {
-    example-subnet-1 = {
-      name = "subnet-1"
-      ip   = ["10.0.1.0/24"]
-      service_endpoints = [
-        {
-          service = "Microsoft.Storage"
-        },
-        {
-          service = "Microsoft.Sql"
-        }
-      ]
-      delegations = [
-        {
-          name         = "delegation1"
-          service_name = "Microsoft.Web/serverFarms"
-          actions      = ["Microsoft.Network/virtualNetworks/subnets/action"]
-        }
-      ]
-      private_endpoint_network_policies = "Disabled"
-      private_link_service_network_policies_enabled = false
-    }
-    example-subnet-2 = {
-      name = "subnet-2"
-      ip   = ["10.0.2.0/24"]
-      service_endpoints = [
-        {
-          service = "Microsoft.Storage"
-        }
-      ]
-      delegations = [
-        {
-          name         = "delegation2"
-          service_name = "Microsoft.Web/serverFarms"
-          actions      = ["Microsoft.Network/virtualNetworks/subnets/action"]
-        }
-      ]
-      private_endpoint_network_policies = "Disabled"
-      private_link_service_network_policies_enabled = false
-    }
-  }
+  default = {}
 }
-variable "vnet_custom_dns" {
-  description = "If applicable, a list of custom DNS servers to use inside your virtual network.  Unset will use default Azure-provided resolver"
-  type        = list(string)
-  default     = null
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
 }
