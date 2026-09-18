@@ -1,68 +1,58 @@
-# Terraform Azure Virtual Network Module
+# Example: Basic — Azure Virtual Network
 
-This module deploys an **Azure Virtual Network (VNet)** along with configurable **subnets**.
+Provisions a VNet with a single subnet.
 
-## Description
-
-- The module creates a VNet in a specified Azure Resource Group and region.
-- Subnets are dynamically created based on a map input, supporting multiple configurations per subnet.
-- Automatic naming ensures predictable and organized network resources:
-
-VNet: `<environment>-<vnet_name>-<region>-vnet`
-Subnet: as specified in the subnet_prefix input
-
-## Features
-
-- Create a **VNet** with custom address space and optional DNS servers.
-- Create **multiple subnets** with configurable:
-  - IP address prefixes
-  - Service endpoints
-  - Delegations
-  - Private endpoint policies
-  - Private link service network policies
-- Apply consistent **tags** to all network resources.
-
-## Typical Use Cases
-
-- Setting up network foundations for applications in Azure.
-- Segregating workloads into subnets for web, database, or backend services.
-- Configuring subnets for private endpoints and service delegations.
-- Ensuring consistent naming and tagging across multiple environments.
-
-## Notes
-
-- Ensure `subnet_prefix` map includes all required keys (`name`, `ip`) for each subnet.
-- Delegations and service endpoints are optional but can be configured per subnet.
-- VNet name and subnets follow the module's naming convention to maintain consistency.
-
-```
+```hcl
 module "vnet" {
-  source              = "./terraform-azure-virtual-network"
-  environment         = "dev"
-  region              = "westeurope"
+  source = "github.com/Think-Cube/terraform-azure-virtual-network?ref=v1.0.0"
+
+  name                = "vnet-myapp-prod"
   resource_group_name = "rg-example"
-  vnet_name           = "app"
-  vnet_address_space  = "10.0.0.0/16"
-  vnet_custom_dns     = ["10.1.0.4", "10.1.0.5"]
+  location            = "West Europe"
+
+  address_space = ["10.0.0.0/16"]
+
   subnet_prefix = {
-    subnet1 = {
-      name                                          = "subnet-web"
-      ip                                            = ["10.0.1.0/24"]
-      service_endpoints                             = [{ service = "Microsoft.Storage" }]
-      delegations                                   = [{ name = "delegation-web", service_name = "Microsoft.Web/serverFarms", actions = ["Microsoft.Network/virtualNetworks/subnets/action"] }]
-      private_endpoint_network_policies             = "Enabled"
-      private_link_service_network_policies_enabled = "Disabled"
-    },
-    subnet2 = {
-      name              = "subnet-db"
-      ip                = ["10.0.2.0/24"]
-      service_endpoints = []
-      delegations       = []
+    app = {
+      name = "snet-app"
+      ip   = ["10.0.1.0/24"]
     }
   }
-  default_tags = {
+
+  tags = {
     environment = "dev"
-    project     = "example"
+    managed_by  = "terraform"
   }
 }
 ```
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_vnet"></a> [vnet](#module\_vnet) | github.com/Think-Cube/terraform-azure-virtual-network | v1.0.0 |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
