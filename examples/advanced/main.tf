@@ -1,5 +1,5 @@
 module "vnet" {
-  source = "github.com/Think-Cube/terraform-azure-virtual-network?ref=v1.0.0"
+  source = "../.."
 
   name                = "vnet-myapp-prod"
   resource_group_name = "rg-example"
