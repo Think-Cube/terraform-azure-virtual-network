@@ -1,4 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
 # Example: Basic — Azure Virtual Network
 
 Provisions an Azure Virtual Network with subnets, DNS settings and optional DDoS protection. Minimal example using required inputs only.
@@ -28,17 +27,3 @@ module "vnet" {
   }
 }
 ```
-
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.0 |
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_vnet"></a> [vnet](#module\_vnet) | ../.. | n/a |
-<!-- END_TF_DOCS -->
